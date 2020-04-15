@@ -82,8 +82,8 @@ jobs:
         uses: 8398a7/action-slack@v2.7.0
         with:
           status: ${{job.status}}
-          author_name: kneema-aws-rotation-action
-          username: kneema-rotation-bot
+          author_name: kneemaa-aws-rotation-action
+          username: kneemaa-rotation-bot
           text: Rotating the token had a status of ${{ job.status }}
           channel: alerts-test
         env:
