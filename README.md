@@ -15,7 +15,7 @@
 
 #### GITHUB_TOKEN
 - Required: ***True***
-- Description: Github Token with **Repo Admin** access of the target repo. If being ran in the repo being updated, you can use `${{github.token}}`
+- Description: Github Token with **Repo Admin** access of the target repo. As of 4/16/2020 `${{github.token}}` does not have permission to query the Secrets API.
 
 #### OWNER_REPOSITORY
 - Required: ***True***
