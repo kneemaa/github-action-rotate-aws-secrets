@@ -2,8 +2,16 @@ import boto3, requests, json, sys, os
 from base64 import b64encode
 from nacl import encoding, public
 
-access_key_name = os.getenv('GITHUB_ACCESS_KEY_NAME', "access_key_id")
-secret_key_name = os.getenv('GITHUB_SECRET_KEY_NAME', "secret_key_id")
+# sets default value
+access_key_name = "access_key_id"
+secret_key_name = "secret_key_id"
+
+# checks if values set to override default
+if 'GITHUB_ACCESS_KEY_NAME' in os.environ:
+    access_key_name = os.environ['GITHUB_ACCESS_KEY_NAME']
+    
+if 'GITHUB_SECRET_KEY_NAME' in os.environ:
+    secret_key_name = os.environ['GITHUB_SECRET_KEY_NAME']
 
 # sets creds for boto3
 iam = boto3.client(
