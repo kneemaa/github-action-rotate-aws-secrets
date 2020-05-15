@@ -3,11 +3,15 @@
 ## Environment Variables
 #### AWS_ACCESS_KEY_ID
 - Required: ***True***
-- Description: Access Key ID of the user being rotated. You can use `${{secrets.ACCESS_KEY_ID}}`
+- Description: Access Key ID to authenticate with AWS. You can use `${{secrets.ACCESS_KEY_ID}}`
 
 #### AWS_SECRET_ACCESS_KEY
 - Required: ***True***
-- Description: Secret Access Key ID of the user being rotated. You can use `${{secrets.SECRET_ACCESS_KEY_ID}}`
+- Description: Secret Access Key ID to authenticate with AWS. You can use `${{secrets.SECRET_ACCESS_KEY_ID}}`
+
+#### AWS_SESSION_TOKEN
+- Required: ***False***
+- Description: Session Token for the current AWS session. Only required if you assume a role first.
 
 #### IAM_USERNAME
 - Required: ***True***
