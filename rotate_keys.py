@@ -17,7 +17,8 @@ if 'GITHUB_SECRET_KEY_NAME' in os.environ:
 iam = boto3.client(
     'iam',
     aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
+    aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY'],
+    aws_session_token = os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
 )
 
 def main_function():
