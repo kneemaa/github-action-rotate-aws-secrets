@@ -23,7 +23,7 @@
 
 #### OWNER_REPOSITORY
 - Required: ***True***
-- Description: The owner and repository name. For example, octocat/Hello-World. If being ran in the repo being updated, you can use `${{github.repository}}`
+- Description: The owner and repository name. For example, octocat/Hello-World. If being ran in the repo being updated, you can use `${{github.repository}}`. Multiple repositories can be specified by a comma-separated list.
 
 #### GITHUB_ACCESS_KEY_NAME
 - Required: ***False***
