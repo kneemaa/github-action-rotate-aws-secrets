@@ -134,6 +134,7 @@ def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
     if updated_secret.status_code not in good_status_codes:
         print(f'Got status code: {updated_secret.status_code} on updating {key_name}')
         sys.exit(1)
+    print(f'Uploaded {key_name} to {owner_repo}.')
 
 # run everything
 main_function()
