@@ -9,7 +9,7 @@ secret_key_name = "secret_key_id"
 # checks if values set to override default
 if 'GITHUB_ACCESS_KEY_NAME' in os.environ:
     access_key_name = os.environ['GITHUB_ACCESS_KEY_NAME']
-    
+
 if 'GITHUB_SECRET_KEY_NAME' in os.environ:
     secret_key_name = os.environ['GITHUB_SECRET_KEY_NAME']
 
@@ -42,9 +42,6 @@ def main_function():
     #generate new credentials
     (new_access_key, new_secret_key) = create_new_keys(iam_username)
 
-    #delete old keys
-    delete_old_keys(iam_username, current_access_id)
-
     for repos in [x.strip() for x in owner_repository.split(',')]:
         #get repo pub key info
         (public_key, pub_key_id) = get_pub_key(repos, github_token)
@@ -56,6 +53,9 @@ def main_function():
         #upload secrets
         upload_secret(repos,access_key_name,encrypted_access_key,pub_key_id,github_token)
         upload_secret(repos,secret_key_name,encrypted_secret_key,pub_key_id,github_token)
+
+    #delete old keys
+    delete_old_keys(iam_username, current_access_id)
 
     sys.exit(0)
 
@@ -88,7 +88,7 @@ def delete_old_keys(iam_username,current_access_id):
     if delete_ret['ResponseMetadata']['HTTPStatusCode'] != 200:
         print("deletion of original key failed")
         sys.exit(1)
-        
+
 ## Update Actions Secret
 # https://developer.github.com/v3/actions/secrets/#create-or-update-a-secret-for-a-repository
 def encrypt(public_key: str, secret_value: str) -> str:
@@ -118,7 +118,7 @@ def get_pub_key(owner_repo, github_token):
 
     return (public_key, public_key_id)
 
-def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):    
+def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
     #upload encrypted access key
     updated_secret = requests.put(
         f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}',
