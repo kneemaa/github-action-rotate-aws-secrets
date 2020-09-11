@@ -23,7 +23,7 @@ iam = boto3.client(
 
 def main_function():
     iam_username = os.environ['IAM_USERNAME']
-    github_token = os.environ['GITHUB_TOKEN']
+    github_token = os.environ['PERSONAL_ACCESS_TOKEN']
     owner_repository = os.environ['OWNER_REPOSITORY']
 
     list_ret = iam.list_access_keys(UserName=iam_username)
