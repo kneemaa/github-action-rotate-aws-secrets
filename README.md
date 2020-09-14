@@ -14,8 +14,8 @@
 - Description: Session Token for the current AWS session. Only required if you assume a role first.
 
 #### IAM_USERNAME
-- Required: ***True***
-- Description: Name of IAM user being rotated
+- Required: ***False***
+- Description: Name of IAM user being rotated, if not set the username which is used in the AWS credentials is used
 
 #### PERSONAL_ACCESS_TOKEN
 - Required: ***True***
