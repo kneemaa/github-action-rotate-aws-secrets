@@ -14,12 +14,12 @@
 - Description: Session Token for the current AWS session. Only required if you assume a role first.
 
 #### IAM_USERNAME
-- Required: ***True***
-- Description: Name of IAM user being rotated
+- Required: ***False***
+- Description: Name of IAM user being rotated, if not set the username which is used in the AWS credentials is used
 
-#### GITHUB_TOKEN
+#### PERSONAL_ACCESS_TOKEN
 - Required: ***True***
-- Description: Github Token with **Repo Admin** access of the target repo. As of 4/16/2020 `${{github.token}}` does not have permission to query the Secrets API.
+- Description: Github Token with **Repo Admin** access of the target repo. As of 4/16/2020 `${{github.token}}` does not have permission to query the Secrets API. The existing env var GITHUB_TOKEN which is added automatically to all runs does not have the access secrets.
 
 #### OWNER_REPOSITORY
 - Required: ***True***
@@ -55,7 +55,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.access_key_name }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key_name }}
           IAM_USERNAME: 'iam-user-name'
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           OWNER_REPOSITORY: ${{ github.repository }}
 ```
 
@@ -78,7 +78,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.access_key_name }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key_name }}
           IAM_USERNAME: 'iam-user-name'
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           OWNER_REPOSITORY: ${{ github.repository }}
 
       - name: Send Slack Status

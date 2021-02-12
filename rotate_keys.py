@@ -22,8 +22,8 @@ iam = boto3.client(
 )
 
 def main_function():
-    iam_username = os.environ['IAM_USERNAME']
-    github_token = os.environ['GITHUB_TOKEN']
+    iam_username = os.environ['IAM_USERNAME'] if 'IAM_USERNAME' in os.environ else who_am_i()
+    github_token = os.environ['PERSONAL_ACCESS_TOKEN']
     owner_repository = os.environ['OWNER_REPOSITORY']
 
     list_ret = iam.list_access_keys(UserName=iam_username)
@@ -58,6 +58,19 @@ def main_function():
     delete_old_keys(iam_username, current_access_id)
 
     sys.exit(0)
+
+def who_am_i():
+    # ask the aws backend for myself with a boto3 sts client
+    sts = boto3.client(
+        'sts',
+        aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY'],
+        aws_session_token = os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
+    )
+
+    user = sts.get_caller_identity()
+    # return last element of splitted list to get username
+    return user['Arn'].split("/")[-1]
 
 def create_new_keys(iam_username):
     # create the keys
