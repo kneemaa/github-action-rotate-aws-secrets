@@ -42,17 +42,30 @@ def main_function():
     #generate new credentials
     (new_access_key, new_secret_key) = create_new_keys(iam_username)
 
-    for repos in [x.strip() for x in owner_repository.split(',')]:
-        #get repo pub key info
-        (public_key, pub_key_id) = get_pub_key(repos, github_token)
+    for repo in [x.strip() for x in owner_repository.split(',')]:
 
-        #encrypt the secrets
-        encrypted_access_key = encrypt(public_key,new_access_key)
-        encrypted_secret_key = encrypt(public_key,new_secret_key)
+        if "/" in repo:
+            # get repo pub key info
+            (public_key, pub_key_id) = get_repo_pub_key(repo, github_token)
 
-        #upload secrets
-        upload_secret(repos,access_key_name,encrypted_access_key,pub_key_id,github_token)
-        upload_secret(repos,secret_key_name,encrypted_secret_key,pub_key_id,github_token)
+            # encrypt the secrets
+            encrypted_access_key = encrypt(public_key, new_access_key)
+            encrypted_secret_key = encrypt(public_key, new_secret_key)
+
+            # upload secrets
+            upload_repo_secret(repo, access_key_name, encrypted_access_key, pub_key_id, github_token)
+            upload_repo_secret(repo, secret_key_name, encrypted_secret_key, pub_key_id, github_token)
+        else:
+            # get repo pub key info
+            (public_key, pub_key_id) = get_org_pub_key(repo, github_token)
+
+            # encrypt the secrets
+            encrypted_access_key = encrypt(public_key, new_access_key)
+            encrypted_secret_key = encrypt(public_key, new_secret_key)
+
+            # upload secrets
+            upload_org_secret(repo, access_key_name, encrypted_access_key, pub_key_id, github_token)
+            upload_org_secret(repo, secret_key_name, encrypted_secret_key, pub_key_id, github_token)
 
     #delete old keys
     delete_old_keys(iam_username, current_access_id)
@@ -111,7 +124,7 @@ def encrypt(public_key: str, secret_value: str) -> str:
     encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
     return b64encode(encrypted).decode("utf-8")
 
-def get_pub_key(owner_repo, github_token):
+def get_repo_pub_key(owner_repo, github_token):
     # get public key for encrypting
     pub_key_ret = requests.get(
         f'https://api.github.com/repos/{owner_repo}/actions/secrets/public-key',
@@ -131,7 +144,27 @@ def get_pub_key(owner_repo, github_token):
 
     return (public_key, public_key_id)
 
-def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
+def get_org_pub_key(org, github_token):
+    # get public key for encrypting
+    pub_key_ret = requests.get(
+        f'https://api.github.com/orgs/{org}/actions/secrets/public-key',
+        headers={'Authorization': f"token {github_token}"}
+    )
+
+    if not pub_key_ret.status_code == requests.codes.ok:
+        raise Exception(f"github public key request failed, status code: {pub_key_ret.status_code}, body: {pub_key_ret.text}, vars: {org} {github_token}")
+        sys.exit(1)
+
+    #convert to json
+    public_key_info = pub_key_ret.json()
+
+    #extract values
+    public_key = public_key_info['key']
+    public_key_id = public_key_info['key_id']
+
+    return (public_key, public_key_id)
+
+def upload_repo_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
     #upload encrypted access key
     updated_secret = requests.put(
         f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}',
@@ -148,6 +181,24 @@ def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
         print(f'Got status code: {updated_secret.status_code} on updating {key_name} in {owner_repo}')
         sys.exit(1)
     print(f'Updated {key_name} in {owner_repo}')
+
+def upload_org_secret(org,key_name,encrypted_value,pub_key_id,github_token):
+    #upload encrypted access key
+    updated_secret = requests.put(
+        f'https://api.github.com/orgs/{org}/actions/secrets/{key_name}',
+        json={
+            'encrypted_value': encrypted_value,
+            'key_id': pub_key_id
+        },
+        headers={'Authorization': f"token {github_token}"}
+    )
+    # status codes github says are valid
+    good_status_codes = [204,201]
+
+    if updated_secret.status_code not in good_status_codes:
+        print(f'Got status code: {updated_secret.status_code} on updating {key_name} in {org}')
+        sys.exit(1)
+    print(f'Updated {key_name} in {org}')
 
 # run everything
 main_function()
