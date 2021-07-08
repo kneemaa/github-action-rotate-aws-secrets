@@ -113,8 +113,14 @@ def encrypt(public_key: str, secret_value: str) -> str:
 
 def get_pub_key(owner_repo, github_token):
     # get public key for encrypting
+    endpoint = f'https://api.github.com/repos/{owner_repo}/actions/secrets/public-key'
+    if 'GITHUB_ENVIRONMENT' in os.environ:
+        environment_name = os.environ['GITHUB_ENVIRONMENT']
+        endpoint = f'https://api.github.com/repos/{owner_repo}/environments/{environment_name}/secrets/public-key'
+
+
     pub_key_ret = requests.get(
-        f'https://api.github.com/repos/{owner_repo}/actions/secrets/public-key',
+        endpoint,
         headers={'Authorization': f"token {github_token}"}
     )
 
@@ -133,8 +139,16 @@ def get_pub_key(owner_repo, github_token):
 
 def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
     #upload encrypted access key
+
+    endpoint = f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}'
+    
+    if 'GITHUB_ENVIRONMENT' in os.environ:
+        environment_name = os.environ['GITHUB_ENVIRONMENT']
+        endpoint = f'https://api.github.com/repos/{owner_repo}/environments/{environment_name}/secrets/{key_name}'
+
+
     updated_secret = requests.put(
-        f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}',
+        endpoint,
         json={
             'encrypted_value': encrypted_value,
             'key_id': pub_key_id
@@ -147,7 +161,12 @@ def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
     if updated_secret.status_code not in good_status_codes:
         print(f'Got status code: {updated_secret.status_code} on updating {key_name} in {owner_repo}')
         sys.exit(1)
-    print(f'Updated {key_name} in {owner_repo}')
+
+    if 'GITHUB_ENVIRONMENT' in os.environ:
+        environment_name = os.environ['GITHUB_ENVIRONMENT']
+        print(f'Updated: {key_name} in {owner_repo} for {environment_name}')
+    else:
+        print(f'Updated: {key_name} in {owner_repo}')
 
 # run everything
 main_function()
