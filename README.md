@@ -1,4 +1,4 @@
-# Rotate AWS Access token stored in Github Repository secrets
+# Rotate AWS Access token stored in Github Repository secrets 
 
 ## Environment Variables
 #### AWS_ACCESS_KEY_ID
