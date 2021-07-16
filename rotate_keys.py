@@ -1,4 +1,7 @@
-import boto3, requests, json, sys, os
+import boto3
+import requests
+import sys
+import os
 from base64 import b64encode
 from nacl import encoding, public
 
@@ -16,10 +19,11 @@ if 'GITHUB_SECRET_KEY_NAME' in os.environ:
 # sets creds for boto3
 iam = boto3.client(
     'iam',
-    aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY'],
-    aws_session_token = os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
+    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+    aws_session_token=os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
 )
+
 
 def main_function():
     iam_username = os.environ['IAM_USERNAME'] if 'IAM_USERNAME' in os.environ else who_am_i()
@@ -39,38 +43,40 @@ def main_function():
     else:
         print(f"I have {starting_num_keys} token, proceeding.")
 
-    #generate new credentials
+    # generate new credentials
     (new_access_key, new_secret_key) = create_new_keys(iam_username)
 
     for repos in [x.strip() for x in owner_repository.split(',')]:
-        #get repo pub key info
+        # get repo pub key info
         (public_key, pub_key_id) = get_pub_key(repos, github_token)
 
-        #encrypt the secrets
-        encrypted_access_key = encrypt(public_key,new_access_key)
-        encrypted_secret_key = encrypt(public_key,new_secret_key)
+        # encrypt the secrets
+        encrypted_access_key = encrypt(public_key, new_access_key)
+        encrypted_secret_key = encrypt(public_key, new_secret_key)
 
-        #upload secrets
-        upload_secret(repos,access_key_name,encrypted_access_key,pub_key_id,github_token)
-        upload_secret(repos,secret_key_name,encrypted_secret_key,pub_key_id,github_token)
+        # upload secrets
+        upload_secret(repos, access_key_name, encrypted_access_key, pub_key_id, github_token)
+        upload_secret(repos, secret_key_name, encrypted_secret_key, pub_key_id, github_token)
 
-    #delete old keys
+    # delete old keys
     delete_old_keys(iam_username, current_access_id)
 
     sys.exit(0)
+
 
 def who_am_i():
     # ask the aws backend for myself with a boto3 sts client
     sts = boto3.client(
         'sts',
-        aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY'],
-        aws_session_token = os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
+        aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+        aws_session_token=os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
     )
 
     user = sts.get_caller_identity()
     # return last element of splitted list to get username
     return user['Arn'].split("/")[-1]
+
 
 def create_new_keys(iam_username):
     # create the keys
@@ -90,9 +96,10 @@ def create_new_keys(iam_username):
         sys.exit(1)
     else:
         print("new keys generated, proceeding")
-        return (new_access_key,new_secret_key)
+        return (new_access_key, new_secret_key)
 
-def delete_old_keys(iam_username,current_access_id):
+
+def delete_old_keys(iam_username, current_access_id):
     delete_ret = iam.delete_access_key(
             UserName=iam_username,
             AccessKeyId=current_access_id
@@ -102,7 +109,8 @@ def delete_old_keys(iam_username,current_access_id):
         print("deletion of original key failed")
         sys.exit(1)
 
-## Update Actions Secret
+
+# Update Actions Secret
 # https://developer.github.com/v3/actions/secrets/#create-or-update-a-secret-for-a-repository
 def encrypt(public_key: str, secret_value: str) -> str:
     """Encrypt a Unicode string using the public key."""
@@ -110,6 +118,7 @@ def encrypt(public_key: str, secret_value: str) -> str:
     sealed_box = public.SealedBox(public_key)
     encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
     return b64encode(encrypted).decode("utf-8")
+
 
 def get_pub_key(owner_repo, github_token):
     # get public key for encrypting
@@ -119,20 +128,26 @@ def get_pub_key(owner_repo, github_token):
     )
 
     if not pub_key_ret.status_code == requests.codes.ok:
-        raise Exception(f"github public key request failed, status code: {pub_key_ret.status_code}, body: {pub_key_ret.text}, vars: {owner_repo} {github_token}")
+        raise Exception(f"github public key request failed, \
+                          status code: {pub_key_ret.status_code}, \
+                          body: {pub_key_ret.text}, \
+                          vars: {owner_repo} {github_token} \
+                        ")
+
         sys.exit(1)
 
-    #convert to json
+    # convert to json
     public_key_info = pub_key_ret.json()
 
-    #extract values
+    # extract values
     public_key = public_key_info['key']
     public_key_id = public_key_info['key_id']
 
     return (public_key, public_key_id)
 
-def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
-    #upload encrypted access key
+
+def upload_secret(owner_repo, key_name, encrypted_value, pub_key_id, github_token):
+    # upload encrypted access key
     updated_secret = requests.put(
         f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}',
         json={
@@ -142,12 +157,13 @@ def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
         headers={'Authorization': f"token {github_token}"}
     )
     # status codes github says are valid
-    good_status_codes = [204,201]
+    good_status_codes = [204, 201]
 
     if updated_secret.status_code not in good_status_codes:
         print(f'Got status code: {updated_secret.status_code} on updating {key_name} in {owner_repo}')
         sys.exit(1)
     print(f'Updated {key_name} in {owner_repo}')
+
 
 # run everything
 main_function()
