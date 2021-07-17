@@ -1,0 +1,32 @@
+name: Lint Check
+
+on: [push]
+
+jobs:
+  python-lint:
+    runs-on: ubuntu-latest
+    name: PEP8 lint check
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 . --max-line-length=120
+
+  line-lint:
+    runs-on: ubuntu-latest
+    name: Check if all files end in newline
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Linelint
+        uses: fernandrone/linelint@0.0.4
+        id: linelint
