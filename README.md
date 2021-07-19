@@ -35,6 +35,10 @@
 - Default: `secret_key_id`
 - Description: Name of the secret for the Secret Access Key ID. Setting this overrides the default.
 
+#### GITHUB_ENVIRONMENT
+- Required: ***False***
+- Description: Name of the [Github environment](https://docs.github.com/en/actions/reference/environments) where the secrets are stored. 
+
 # Example
 ## Rotation every monday at 13:00 UTC
 ```
@@ -58,6 +62,38 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           OWNER_REPOSITORY: ${{ github.repository }}
 ```
+
+## Rotation every monday at 13:00 UTC for the `dev` Github environment secret
+
+```
+on:
+  schedule:
+    - cron: '* 13 * * 1' 
+
+jobs:
+  rotate:
+    name: rotate iam user keys
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v2.0.0
+
+      - name: rotate aws keys
+        uses: kneemaa/github-action-rotate-aws-secrets@v1.1.0
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.access_key_name }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key_name }}
+          IAM_USERNAME: 'iam-user-name'
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          OWNER_REPOSITORY: ${{ github.repository }}
+          GITHUB_ENVIRONMENT: dev
+```
+
+Note that environment names must be set twice:
+
+ * at the job level for Github workflow to know where to fetch the secrets
+ * in the action's environment variable so that the action knows where to store the secret back
+
 
 ## Adding Slack notification on failure only
 ```
