@@ -127,7 +127,6 @@ def get_pub_key(owner_repo, github_token):
         environment_name = os.environ['GITHUB_ENVIRONMENT']
         endpoint = f'https://api.github.com/repos/{owner_repo}/environments/{environment_name}/secrets/public-key'
 
-
     pub_key_ret = requests.get(
         endpoint,
         headers={'Authorization': f"token {github_token}"}
@@ -152,11 +151,11 @@ def get_pub_key(owner_repo, github_token):
     return (public_key, public_key_id)
 
 
-def upload_secret(owner_repo,key_name,encrypted_value,pub_key_id,github_token):
-    #upload encrypted access key
+def upload_secret(owner_repo, key_name, encrypted_value, pub_key_id, github_token):
+    # upload encrypted access key
 
     endpoint = f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}'
-    
+
     if 'GITHUB_ENVIRONMENT' in os.environ:
         environment_name = os.environ['GITHUB_ENVIRONMENT']
         endpoint = f'https://api.github.com/repos/{owner_repo}/environments/{environment_name}/secrets/{key_name}'
