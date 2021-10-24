@@ -3,43 +3,18 @@
 # Rotate AWS Access token stored in Github Repository secrets
 
 ## Environment Variables
-#### AWS_ACCESS_KEY_ID
-- Required: ***True***
-- Description: Access Key ID to authenticate with AWS. You can use `${{secrets.ACCESS_KEY_ID}}`
 
-#### AWS_SECRET_ACCESS_KEY
-- Required: ***True***
-- Description: Secret Access Key ID to authenticate with AWS. You can use `${{secrets.SECRET_ACCESS_KEY_ID}}`
-
-#### AWS_SESSION_TOKEN
-- Required: ***False***
-- Description: Session Token for the current AWS session. Only required if you assume a role first.
-
-#### IAM_USERNAME
-- Required: ***False***
-- Description: Name of IAM user being rotated, if not set the username which is used in the AWS credentials is used
-
-#### PERSONAL_ACCESS_TOKEN
-- Required: ***True***
-- Description: Github Token with **Repo Admin** access of the target repo. As of 4/16/2020 `${{github.token}}` does not have permission to query the Secrets API. The existing env var GITHUB_TOKEN which is added automatically to all runs does not have the access secrets.
-
-#### OWNER_REPOSITORY
-- Required: ***True***
-- Description: The owner and repository name. For example, octocat/Hello-World. If being ran in the repo being updated, you can use `${{github.repository}}`. Multiple repositories can be specified by a comma-separated list (e.g. `OWNER_REPOSITORY: ${{ github.repository }},MyGitHubOrgOrUser/MyGitHubRepo`). 
-
-#### GITHUB_ACCESS_KEY_NAME
-- Required: ***False***
-- Default: `access_key_id`
-- Description: Name of the secret for the Access Key ID. Setting this overrides the default.
-
-#### GITHUB_SECRET_KEY_NAME
-- Required: ***False***
-- Default: `secret_key_id`
-- Description: Name of the secret for the Secret Access Key ID. Setting this overrides the default.
-
-#### GITHUB_ENVIRONMENT
-- Required: ***False***
-- Description: Name of the [Github environment](https://docs.github.com/en/actions/reference/environments) where the secrets are stored. 
+| Variable | Required | Description | Default |
+|--------- | -------- | ----------- | ------- |
+| AWS_ACCESS_KEY_ID | True | Access Key ID to authenticate with AWS. You can use `${{secrets.ACCESS_KEY_ID}}` | N/A |
+| AWS_SECRET_ACCESS_KEY | True | Secret Access Key ID to authenticate with AWS. You can use `${{secrets.SECRET_ACCESS_KEY_ID}}` | N/A |
+| AWS_SESSION_TOKEN | False | Session Token for the current AWS session. Only required if you assume a role first. | N/A |
+| IAM_USERNAME | False | Name of IAM user being rotated, if not set the username which is used in the AWS credentials is used | N/A |
+| PERSONAL_ACCESS_TOKEN | True | Github Token with **Repo Admin** access of the target repo. As of 4/16/2020 `${{github.token}}` does not have permission to query the Secrets API. The existing env var GITHUB_TOKEN which is added automatically to all runs does not have the access secrets. | N/A |
+| OWNER_REPOSITORY | True | The owner and repository name. For example, octocat/Hello-World. If being ran in the repo being updated, you can use `${{github.repository}}`. Multiple repositories can be specified by a comma-separated list (e.g. `OWNER_REPOSITORY: ${{ github.repository }},MyGitHubOrgOrUser/MyGitHubRepo`). | N/A |
+| GITHUB_ACCESS_KEY_NAME | False |  Name of the secret for the Access Key ID. Setting this overrides the default. | `access_key_id` |
+| GITHUB_SECRET_KEY_NAME | False | Name of the secret for the Secret Access Key ID. Setting this overrides the default. | `secret_key_id` |
+| GITHUB_ENVIRONMENT | False | Name of the [Github environment](https://docs.github.com/en/actions/reference/environments) where the secrets are stored. | N/A |
 
 # Example
 ## Rotation every monday at 13:00 UTC
