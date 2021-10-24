@@ -1,3 +1,5 @@
+name: validate master
+
 on:
   workflow_dispatch:
 
