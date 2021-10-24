@@ -2,6 +2,11 @@ name: validate master
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '* 13 * * 1' # every monday at 6 AM PDT
 
 jobs:
   rotate:

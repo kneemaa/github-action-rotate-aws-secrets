@@ -1,4 +1,4 @@
-![Validate Master](https://github.com/kneemaa/githhub-action-rotate-aws-secrets/actions/workflows/validate_master/badge.svg)
+![Validate Master](https://github.com/kneemaa/github-action-rotate-aws-secrets/actions/workflows/validate_master.yml/badge.svg)
 
 # Rotate AWS Access token stored in Github Repository secrets
 
