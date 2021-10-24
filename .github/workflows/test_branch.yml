@@ -1,0 +1,33 @@
+name: test branch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rotate:
+    name: rotate iam user keys
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.0.0
+
+      - name: rotate aws keys
+        uses: ./
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.validate_access_key_name }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.validate_secret_key_name }}
+          IAM_USERNAME: ${{ secrets.validate_username}}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          OWNER_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACCESS_KEY_NAME: validate_access_key_name
+          GITHUB_SECRET_KEY_NAME: validate_secret_key_name
+
+      # - name: Send Slack Status
+      #   if: failure()
+      #   uses: 8398a7/action-slack@45986a1c69e93353648c176ce49eecddebebf64e # Commit sha v3.9.0
+      #   with:
+      #     status: ${{job.status}}
+      #     author_name: ${{ secrets.validate_username}}
+      #     username: ${{ secrets.validate_username}}
+      #     text: Failed to rotate token for '${{ secrets.validate_username}}' in gihub-action-rotate-aws-secrets
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_ADDRESS }}
