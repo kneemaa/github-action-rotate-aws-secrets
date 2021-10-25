@@ -1,0 +1,3 @@
+pynacl
+boto3
+requests
