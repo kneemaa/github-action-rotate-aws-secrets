@@ -63,16 +63,7 @@ def create_new_keys(iam_username):
     new_access_key = create_ret['AccessKey']['AccessKeyId']
     new_secret_key = create_ret['AccessKey']['SecretAccessKey']
 
-    # check to see if the keys were created
-    second_list_ret = iam.list_access_keys(UserName=iam_username)
-    second_num_keys = len(second_list_ret["AccessKeyMetadata"])
-
-    if second_num_keys != 2:
-        print("new keys failed to generate.")
-        sys.exit(1)
-    else:
-        print("new keys generated, proceeding")
-        return (new_access_key, new_secret_key)
+    return (new_access_key, new_secret_key)
 
 
 def delete_old_keys(iam_username, current_access_id):
