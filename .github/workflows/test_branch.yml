@@ -44,7 +44,7 @@ jobs:
       - name: Install Python Dependencies
         run: |
           cd ./action_files
-          pip install -r requirements.txt .
+          pip install -r requirements.txt -t .
 
       - name: Rollback Keys
         run: |

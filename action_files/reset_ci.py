@@ -11,31 +11,31 @@ from nacl import encoding, public
 
 # checks if values set to override default
 if 'GITHUB_ACCESS_KEY_NAME' in os.environ:
-  access_key_name = os.environ['GITHUB_ACCESS_KEY_NAME']
+    access_key_name = os.environ['GITHUB_ACCESS_KEY_NAME']
 
 if 'GITHUB_SECRET_KEY_NAME' in os.environ:
-  secret_key_name = os.environ['GITHUB_SECRET_KEY_NAME']
+    secret_key_name = os.environ['GITHUB_SECRET_KEY_NAME']
 
 # sets creds for boto3
 iam = boto3.client(
-  'iam',
-  aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-  aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-  aws_session_token=os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
+    'iam',
+    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+    aws_session_token=os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
 )
 
 
 def main_function():
-  iam_username = os.environ['IAM_USERNAME'] # if 'IAM_USERNAME' in os.environ else who_am_i()
-  github_token = os.environ['PERSONAL_ACCESS_TOKEN']
-  owner_repository = os.environ['OWNER_REPOSITORY']
+    iam_username = os.environ['IAM_USERNAME']
+    github_token = os.environ['PERSONAL_ACCESS_TOKEN']
+    owner_repository = os.environ['OWNER_REPOSITORY']
 
-  keys_to_delete = iam.list_access_keys(
-    UserName=iam_username,
-  )
+    keys_to_delete = iam.list_access_keys(
+      UserName=iam_username,
+    )
 
-  for key in keys_to_delete['AccessKeyMetadata']:
-    delete_old_keys(iam_username,key['AccessKeyId'])
+    for key in keys_to_delete['AccessKeyMetadata']:
+        delete_old_keys(iam_username, key['AccessKeyId'])
 
     (new_access_key, new_secret_key) = create_new_keys(iam_username)
 
@@ -53,6 +53,7 @@ def main_function():
 
     sys.exit(0)
 
+
 def create_new_keys(iam_username):
     # create the keys
     create_ret = iam.create_access_key(
@@ -62,16 +63,7 @@ def create_new_keys(iam_username):
     new_access_key = create_ret['AccessKey']['AccessKeyId']
     new_secret_key = create_ret['AccessKey']['SecretAccessKey']
 
-    # check to see if the keys were created
-    second_list_ret = iam.list_access_keys(UserName=iam_username)
-    second_num_keys = len(second_list_ret["AccessKeyMetadata"])
-
-    if second_num_keys != 2:
-        print("new keys failed to generate.")
-        sys.exit(1)
-    else:
-        print("new keys generated, proceeding")
-        return (new_access_key, new_secret_key)
+    return (new_access_key, new_secret_key)
 
 
 def delete_old_keys(iam_username, current_access_id):
