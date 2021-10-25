@@ -29,8 +29,7 @@ jobs:
           GITHUB_SECRET_KEY_NAME: validate_secret_key_name
 
   rollback:
-    needs: [rotate]
-    if: ${{ failure() && needs.rotate.result=='failure'}}
+    if: failure()
     name: rollback keys
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +41,6 @@ jobs:
           python-version: 3.8
 
       - name: Rollback Keys
-        if: steps.testRotation.outcome == 'failure'
         run: |
           pushd ./action_files
           python reset_ci.py
