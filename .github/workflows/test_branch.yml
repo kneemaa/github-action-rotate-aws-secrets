@@ -2,7 +2,7 @@ name: test branch
 
 on:
   workflow_dispatch:
-  pull_request:
+  push:
     branches:
       - '*'         # matches every branch that doesn't contain a '/'
       - '*/*'       # matches every branch containing a single '/'
