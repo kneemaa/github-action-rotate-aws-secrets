@@ -43,12 +43,12 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          pushd ./action_files
+          cd ./action_files
           pip install -r requirements.txt .
-          
+
       - name: Rollback Keys
         run: |
-          pushd ./action_files
+          cd ./action_files
           python reset_ci.py
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.recovery_access_key_name }}
