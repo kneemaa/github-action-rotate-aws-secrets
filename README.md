@@ -40,11 +40,11 @@
 - Description: Name of the [Github environment](https://docs.github.com/en/actions/reference/environments) where the secrets are stored. 
 
 # Example
-## Rotation every monday at 13:00 UTC
+## Rotation every monday at 13:27 UTC
 ```
 on:
   schedule:
-    - cron: '* 13 * * 1' 
+    - cron: '27 13 * * 1' 
 
 jobs:
   rotate:
@@ -63,12 +63,12 @@ jobs:
           OWNER_REPOSITORY: ${{ github.repository }}
 ```
 
-## Rotation every monday at 13:00 UTC for the `dev` Github environment secret
+## Rotation every monday at 13:27 UTC for the `dev` Github environment secret
 
 ```
 on:
   schedule:
-    - cron: '* 13 * * 1' 
+    - cron: '27 13 * * 1' 
 
 jobs:
   rotate:
@@ -99,7 +99,7 @@ Note that environment names must be set twice:
 ```
 on:
   schedule:
-    - cron: '* 13 * * 1'
+    - cron: '27 13 * * 1'
 
 jobs:
   rotate:
