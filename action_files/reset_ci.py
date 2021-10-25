@@ -37,21 +37,21 @@ def main_function():
     for key in keys_to_delete['AccessKeyMetadata']:
         delete_old_keys(iam_username, key['AccessKeyId'])
 
-        (new_access_key, new_secret_key) = create_new_keys(iam_username)
+    (new_access_key, new_secret_key) = create_new_keys(iam_username)
 
-        for repos in [x.strip() for x in owner_repository.split(',')]:
-            # get repo pub key info
-            (public_key, pub_key_id) = get_pub_key(repos, github_token)
+    for repos in [x.strip() for x in owner_repository.split(',')]:
+        # get repo pub key info
+        (public_key, pub_key_id) = get_pub_key(repos, github_token)
 
-            # encrypt the secrets
-            encrypted_access_key = encrypt(public_key, new_access_key)
-            encrypted_secret_key = encrypt(public_key, new_secret_key)
+        # encrypt the secrets
+        encrypted_access_key = encrypt(public_key, new_access_key)
+        encrypted_secret_key = encrypt(public_key, new_secret_key)
 
-            # upload secrets
-            upload_secret(repos, access_key_name, encrypted_access_key, pub_key_id, github_token)
-            upload_secret(repos, secret_key_name, encrypted_secret_key, pub_key_id, github_token)
+        # upload secrets
+        upload_secret(repos, access_key_name, encrypted_access_key, pub_key_id, github_token)
+        upload_secret(repos, secret_key_name, encrypted_secret_key, pub_key_id, github_token)
 
-        sys.exit(0)
+    sys.exit(0)
 
 
 def create_new_keys(iam_username):
