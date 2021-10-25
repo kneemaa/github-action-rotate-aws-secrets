@@ -2,11 +2,11 @@ name: test branch
 
 on:
   workflow_dispatch:
-  pull_request:
   push:
     branches:
       - '*'         # matches every branch that doesn't contain a '/'
       - '*/*'       # matches every branch containing a single '/'
+      - '*:*'       # matches every branch from forks
       - '**'        # matches every branch
       - '!master'   # excludes master
 
