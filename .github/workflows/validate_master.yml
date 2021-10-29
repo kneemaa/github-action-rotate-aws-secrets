@@ -6,11 +6,11 @@ on:
     branches:
       - master
   schedule:
-    - cron: '* 13 * * 1' # every monday at 6 AM PDT
+    - cron: '27 13 * * 1' # every monday at 6 AM PDT
 
 jobs:
   rotate-validate:
-    name: rotate iam user keys
+    name: rotate validate iam user keys
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.0.0
@@ -38,7 +38,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_ADDRESS }}
 
   rotate-recovery:
-    name: rotate iam user keys
+    name: rotate recovery iam user keys
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.0.0
