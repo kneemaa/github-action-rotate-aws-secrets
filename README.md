@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v2.0.0
 
       - name: rotate aws keys
-        uses: kneemaa/github-action-rotate-aws-secrets@v1.1.0
+        uses: kneemaa/github-action-rotate-aws-secrets@v1.2.0
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.access_key_name }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key_name }}
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2.0.0
 
       - name: rotate aws keys
-        uses: kneemaa/github-action-rotate-aws-secrets@v1.1.0
+        uses: kneemaa/github-action-rotate-aws-secrets@v1.2.0
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.access_key_name }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.secret_key_name }}
