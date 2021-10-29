@@ -5,28 +5,21 @@ import os
 from base64 import b64encode
 from nacl import encoding, public
 
-# sets default value
-access_key_name = "access_key_id"
-secret_key_name = "secret_key_id"
-
-# checks if values set to override default
-if 'GITHUB_ACCESS_KEY_NAME' in os.environ:
-    access_key_name = os.environ['GITHUB_ACCESS_KEY_NAME']
-
-if 'GITHUB_SECRET_KEY_NAME' in os.environ:
-    secret_key_name = os.environ['GITHUB_SECRET_KEY_NAME']
+# checks if values set to override default or set default
+access_key_name = os.environ.get('GITHUB_ACCESS_KEY_NAME', 'access_key_id')
+secret_key_name = os.environ.get('GITHUB_SECRET_KEY_NAME', 'secret_key_id')
 
 # sets creds for boto3
 iam = boto3.client(
     'iam',
     aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
     aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-    aws_session_token=os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
+    aws_session_token=os.environ.get('AWS_SESSION_TOKEN')
 )
 
 
 def main_function():
-    iam_username = os.environ['IAM_USERNAME'] if 'IAM_USERNAME' in os.environ else who_am_i()
+    iam_username = os.environ.get('IAM_USERNAME', who_am_i())
     github_token = os.environ['PERSONAL_ACCESS_TOKEN']
     owner_repository = os.environ['OWNER_REPOSITORY']
 
@@ -70,7 +63,7 @@ def who_am_i():
         'sts',
         aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
         aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-        aws_session_token=os.environ['AWS_SESSION_TOKEN'] if 'AWS_SESSION_TOKEN' in os.environ else None
+        aws_session_token=os.environ.get('AWS_SESSION_TOKEN')
     )
 
     user = sts.get_caller_identity()
@@ -123,8 +116,7 @@ def encrypt(public_key: str, secret_value: str) -> str:
 def get_pub_key(owner_repo, github_token):
     # get public key for encrypting
     endpoint = f'https://api.github.com/repos/{owner_repo}/actions/secrets/public-key'
-    if 'GITHUB_ENVIRONMENT' in os.environ:
-        environment_name = os.environ['GITHUB_ENVIRONMENT']
+    if environment_name := os.environ.get('GITHUB_ENVIRONMENT'):
         endpoint = f'https://api.github.com/repos/{owner_repo}/environments/{environment_name}/secrets/public-key'
 
     pub_key_ret = requests.get(
@@ -156,8 +148,7 @@ def upload_secret(owner_repo, key_name, encrypted_value, pub_key_id, github_toke
 
     endpoint = f'https://api.github.com/repos/{owner_repo}/actions/secrets/{key_name}'
 
-    if 'GITHUB_ENVIRONMENT' in os.environ:
-        environment_name = os.environ['GITHUB_ENVIRONMENT']
+    if environment_name := os.environ.get('GITHUB_ENVIRONMENT'):
         endpoint = f'https://api.github.com/repos/{owner_repo}/environments/{environment_name}/secrets/{key_name}'
 
     updated_secret = requests.put(
@@ -175,8 +166,7 @@ def upload_secret(owner_repo, key_name, encrypted_value, pub_key_id, github_toke
         print(f'Got status code: {updated_secret.status_code} on updating {key_name} in {owner_repo}')
         sys.exit(1)
 
-    if 'GITHUB_ENVIRONMENT' in os.environ:
-        environment_name = os.environ['GITHUB_ENVIRONMENT']
+    if environment_name := os.environ.get('GITHUB_ENVIRONMENT'):
         print(f'Updated: {key_name} in {owner_repo} for {environment_name}')
     else:
         print(f'Updated: {key_name} in {owner_repo}')
