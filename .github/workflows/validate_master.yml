@@ -20,7 +20,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.validate_secret_key_name }}
           IAM_USERNAME: ${{ secrets.validate_username}}
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          USER_NAME: ${{ secrets.USER_NAME }}
           OWNER_REPOSITORY: ${{ github.repository }}
           GITHUB_ACCESS_KEY_NAME: validate_access_key_name
           GITHUB_SECRET_KEY_NAME: validate_secret_key_name
