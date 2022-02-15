@@ -26,15 +26,12 @@ def main_function():
     list_ret = iam.list_access_keys(UserName=iam_username)
     starting_num_keys = len(list_ret["AccessKeyMetadata"])
 
-    # save current id for deletion later
-    current_access_id = list_ret["AccessKeyMetadata"][0]["AccessKeyId"]
-
     # Check if two keys already exist, if so, exit 1
-    if starting_num_keys != 1:
-        print("There are already 2 keys for this user, Cannot rotate tokens")
+    if starting_num_keys >= 2:
+        print("There are already 2 keys for this user. Cannot rotate tokens.")
         sys.exit(1)
     else:
-        print(f"I have {starting_num_keys} token, proceeding.")
+        print(f"Validated <2 keys exist ({starting_num_keys}), proceeding.")
 
     # generate new credentials
     (new_access_key, new_secret_key) = create_new_keys(iam_username)
@@ -52,7 +49,8 @@ def main_function():
         upload_secret(repos, secret_key_name, encrypted_secret_key, pub_key_id, github_token)
 
     # delete old keys
-    delete_old_keys(iam_username, current_access_id)
+    if starting_num_keys == 1:
+        delete_old_keys(iam_username, list_ret["AccessKeyMetadata"][0]["AccessKeyId"])
 
     sys.exit(0)
 
@@ -82,9 +80,9 @@ def create_new_keys(iam_username):
 
     # check to see if the keys were created
     second_list_ret = iam.list_access_keys(UserName=iam_username)
-    second_num_keys = len(second_list_ret["AccessKeyMetadata"])
+    access_keys = [k['AccessKeyId'] for k in second_list_ret["AccessKeyMetadata"]]
 
-    if second_num_keys != 2:
+    if new_access_key not in access_keys:
         print("new keys failed to generate.")
         sys.exit(1)
     else:
