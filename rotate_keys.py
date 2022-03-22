@@ -31,7 +31,7 @@ def main_function():
         print("There are already 2 keys for this user. Cannot rotate tokens.")
         sys.exit(1)
     else:
-        print(f"Validated <2 keys exist ({starting_num_keys}), proceeding.")
+        print(f"Validated <2 keys exist (current count: {starting_num_keys}), proceeding.")
 
     # generate new credentials
     (new_access_key, new_secret_key) = create_new_keys(iam_username)
