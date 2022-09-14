@@ -8,7 +8,7 @@ Performs the following actions:
 1. If 2 sets of keys exists, the action will fail
 1. If 0 or 1 set of keys exists, the action will:
     1. Create a new key pair for the IAM user
-    1. Update the Github secrets (`GITHUB_ACCESS_KEY_NAME` and `GITHUB_SECRET_KEY_NAME`) for all provided repositories (`OWBER_REPOSITORY`)
+    1. Update the Github secrets (`GITHUB_ACCESS_KEY_NAME` and `GITHUB_SECRET_KEY_NAME`) for all provided repositories (`OWNER_REPOSITORY`)
     1. Delete the original key pair from the IAM user (if 1 already exists)
 
 ## Environment Variables
